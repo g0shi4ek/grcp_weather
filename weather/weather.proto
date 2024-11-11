@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+package weather;
+
+option go_package = "first_try/weather";
+
+message WeatherData {
+  message Coord {
+    float lon = 1;
+    float lat = 2;
+  }
+
+  message WeatherCondition {
+    int32 id = 1;
+    string main = 2;
+    string description = 3;
+    string icon = 4;
+  }
+
+  message MainData {
+    float temp = 1;
+    float feels_like = 2;
+    float temp_min = 3;
+    float temp_max = 4;
+    int32 pressure = 5;
+    int32 humidity = 6;
+    int32 sea_level = 7;
+    int32 grnd_level = 8;
+  }
+
+  message Wind {
+    float speed = 1;
+    int32 deg = 2;
+    float gust = 3; // Added gust field
+  }
+
+  message Clouds {
+    int32 all = 1;
+  }
+
+  message Sys {
+    int32 type = 1;
+    int32 id = 2;
+    string country = 3;
+    int64 sunrise = 4;
+    int64 sunset = 5;
+  }
+
+  Coord coord = 1;
+  repeated WeatherCondition weather = 2;
+  string base = 3;
+  MainData main = 4;
+  int32 visibility = 5;
+  Wind wind = 6;
+  Clouds clouds = 7;
+  int64 dt = 8;
+  Sys sys = 9;
+  int32 timezone = 10;
+  int32 id = 11;
+  string name = 12;
+  int32 cod = 13;
+}
+
+service WeatherService {
+  rpc GetWeather (CityRequest) returns (WeatherData);
+}
+
+message CityRequest {
+  string city = 1;
+}
