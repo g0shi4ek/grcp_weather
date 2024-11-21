@@ -31,7 +31,7 @@ message WeatherData {
   message Wind {
     float speed = 1;
     int32 deg = 2;
-    float gust = 3; // Added gust field
+    float gust = 3;
   }
 
   message Clouds {

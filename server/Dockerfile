@@ -1,5 +1,9 @@
-FROM golang:latest
-WORKDIR /weather
-COPY . /weather/
+FROM golang
+
+WORKDIR /app
+
+COPY . .
+COPY ../sv ./
+
 EXPOSE 5000
-CMD [ "go", "run" ,"../start_serv.go" ]
+CMD ["go", "run", "start_serv.go"]
