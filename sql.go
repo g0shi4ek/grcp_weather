@@ -1,3 +1,5 @@
+//проверка работы с бд
+
 package main
 
 import (
@@ -38,17 +40,6 @@ func main() {
 		fmt.Println("Версия PostgreSQL:", version)
 	}
 
-	fmt.Println("Подключение к базе данных успешно проверено!")
+	fmt.Println("Подключение к базе данных успешно проверено")
 
-	//result, err := db.Exec("insert into Weather (City, Time, Temprature, Feels, Humidity, Wind) values ($1,$2,$3,$4,$5,$6)", city, time.Now(), weatherData.Main.Temp, weatherData.Main.FeelsLike, weatherData.Main.Humidity, weatherData.Wind.Speed)
-	//if err != nil {
-	//	panic(err)
-	//}
-
-	//rowsAffected, err := result.RowsAffected()
-	//if err != nil {
-	//	log.Fatal(err)
-
-	//}
-	//fmt.Println("Rows affected:", rowsAffected)
 }

@@ -2,15 +2,20 @@ package sv
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"first_try/weather"
 	"fmt"
+	_ "github.com/lib/pq"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"io/ioutil"
+	_ "os"
+
 	"net"
 	"net/http"
+	"time"
 )
 
 const apiKey = "cae0bfaacc6a42deb153581a503b95f7" // API-ключ
@@ -38,6 +43,24 @@ func (s *weatherServer) GetWeather(ctx context.Context, req *weather.CityRequest
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to unmarshal: %v", err)
 	}
+
+	connStr := "user=postgres password=11111111 dbname=weatherdb sslmode=disable"
+	db, err := sql.Open("postgres", connStr)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to open db: %v", err)
+	}
+	defer db.Close()
+
+	result, err := db.Exec("insert into Weather (City, Time, Temperature, Feels, Humidity, Wind) values ($1,$2,$3,$4,$5,$6)", weatherData.Name, time.Now(), weatherData.Main.Temp, weatherData.Main.FeelsLike, weatherData.Main.Humidity, weatherData.Wind.Speed)
+	if err != nil {
+		panic(err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to add: %v", err)
+	}
+	fmt.Println("Rows affected:", rowsAffected)
 
 	return &weatherData, nil
 }
