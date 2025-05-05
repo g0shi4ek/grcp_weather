@@ -2,27 +2,28 @@ package cl
 
 import (
 	"context"
-	"first_try/weather"
 	"fmt"
 	"google.golang.org/grpc"
+	pb "github.com/g0shi4ek/grcp_weather/gen/go"
 )
 
 type WeatherClient struct {
-	client weather.WeatherServiceClient
+	client pb.WeatherServiceClient
 }
 
 func NewWeatherClient(address string) (*WeatherClient, error) {
-	conn, err := grpc.Dial(address, grpc.WithInsecure())
+	conn, err := grpc.NewClient(address, grpc.WithDefaultCallOptions())
 	if err != nil {
 		return nil, fmt.Errorf("failed to dial: %v", err)
 	}
+	defer conn.Close()
 	return &WeatherClient{
-		client: weather.NewWeatherServiceClient(conn),
+		client: pb.NewWeatherServiceClient(conn),
 	}, nil
 }
 
-func (c *WeatherClient) GetWeather(city string) (*weather.WeatherData, error) {
-	req := &weather.CityRequest{
+func (c *WeatherClient) GetWeather(city string) (*pb.WeatherData, error) {
+	req := &pb.CityRequest{
 		City: city,
 	}
 	res, err := c.client.GetWeather(context.Background(), req)
