@@ -8,6 +8,6 @@ type IWeatherRepository interface {
 }
 
 type IWeatherService interface{
-	GetCurrent(ctx context.Context, city string) (*Weather, error)
+	GetCurrent(ctx context.Context, city string, apiKey string) (*Weather, error)
 	GetHistory(ctx context.Context, city string) ([]*Weather, error)
 }
