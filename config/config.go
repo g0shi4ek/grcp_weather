@@ -9,7 +9,7 @@ import (
 
 type Config struct {
 	ServerConf ServerConfig
-	DbConf    DbConfig
+	DbConf     DbConfig
 }
 
 type DbConfig struct {
@@ -22,8 +22,9 @@ type DbConfig struct {
 }
 
 type ServerConfig struct {
-	Port      string
-	ApiKey 	  string
+	Port   string
+	ApiKey string
+	Host   string
 }
 
 func LoadConfig() *Config {
@@ -41,8 +42,9 @@ func LoadConfig() *Config {
 			DbName:     os.Getenv("DATABASE_NAME"),
 		},
 		ServerConf: ServerConfig{
-			Port:      os.Getenv("PORT"),
+			Port:   os.Getenv("PORT"),
 			ApiKey: os.Getenv("KEY"),
+			Host:   os.Getenv("HOST"),
 		},
 	}
 }

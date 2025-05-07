@@ -20,7 +20,7 @@ type GrpcWeatherClient struct {
 
 func NewGrpcWeatherClient(cfg *config.Config) (*GrpcWeatherClient, error) {
 	conn, err := grpc.NewClient(
-		"localhost:"+cfg.ServerConf.Port,
+		cfg.ServerConf.Host+cfg.ServerConf.Port,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
@@ -55,7 +55,8 @@ func (c *GrpcWeatherClient) GetCurrentWeather(ctx context.Context, cities []stri
 				log.Printf("Failed to send city %s: %v", city, err)
 				return
 			}
-			time.Sleep(time.Second)
+			log.Printf("Send city: %s", city)
+			time.Sleep(time.Second * 2)
 		}
 	}()
 
@@ -68,6 +69,7 @@ func (c *GrpcWeatherClient) GetCurrentWeather(ctx context.Context, cities []stri
 		if err != nil {
 			return nil, fmt.Errorf("receive error: %w", err)
 		}
+		log.Printf("Get data for city: %s", weather.GetCity())
 		results = append(results, weather)
 	}
 

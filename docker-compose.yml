@@ -2,23 +2,63 @@
 
 services:
   client:
-    build: ./client
-    ports:
-      - "3000:3000"
+    build:
+      context: .
+      dockerfile: cmd/startClient/Dockerfile
+    container_name: weather_client
+    stdin_open: true  # Контейнер может принимать ввод
+    tty: true         # Контейнер ведёт себя как терминал
+    env_file:
+      - .env
     depends_on:
-      - server
+      server:
+        condition: service_started
+    networks:
+      - weather_network
+
+
   server:
-    build: ./server
+    build: 
+      context: .
+      dockerfile: cmd/startServer/Dockerfile
+    container_name: weather_server
+    restart: unless-stopped
+    env_file:
+      - .env
     ports:
-      - "5000:5000"
+      - "50051:50051"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - weather_network
+
   postgres:
-    image: bitnami/postgresql
-    container_name: weather_postgres
-    volumes:
-      - "./migrations/postgres:/docker-entrypoint-initdb.d"
+    image: postgres:15-alpine
+    container_name: postgres_db
+    restart: unless-stopped
+    env_file:
+      - .env
     environment:
-      POSTGRES_PASSWORD: 11111111
-      POSTGRES_DB: weatherdb
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d
     ports:
       - "5432:5432"
-    restart: unless-stopped
+    networks:
+      - weather_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER} -d ${DATABASE_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+
+networks:
+  weather_network:
+    driver: bridge
